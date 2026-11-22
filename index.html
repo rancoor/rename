@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Product Naming Standard | Dictionary & Guide</title>
+<meta name="description" content="Interactive product naming dictionary, rules and similar-word suggestions.">
+<style>
+:root{--navy:#17365d;--blue:#246b8a;--ink:#1f2937;--muted:#617184;--line:#dce4ec;--bg:#f5f7fa;--green:#1f7a55;--amber:#a45b10;--red:#a52c2c}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Arial}
+header{background:linear-gradient(120deg,#17365d,#246b8a);color:#fff;padding:34px max(22px,calc((100vw - 1180px)/2)) 30px}
+header h1{font-size:clamp(27px,4vw,42px);line-height:1.12;margin:0 0 10px}header p{max-width:760px;margin:0;color:#e5eef5}
+nav{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}nav a,.btn{color:white;text-decoration:none;border:1px solid #ffffff66;padding:8px 13px;border-radius:9px;font-weight:650;font-size:13px}
+main{max-width:1180px;margin:26px auto;padding:0 18px}.hero-grid{display:grid;grid-template-columns:1.4fr .8fr;gap:18px}
+.panel,.stat,.rule-card{background:#fff;border:1px solid var(--line);border-radius:15px;box-shadow:0 4px 16px #20354b08}
+.panel{padding:22px}.panel h2{font-size:20px;margin:0 0 7px;color:var(--navy)}.muted{color:var(--muted)}
+.searchbox{display:flex;gap:8px;margin:16px 0 8px}.searchbox input{flex:1;min-width:0;font-size:17px;padding:14px;border:1px solid #b8c7d5;border-radius:10px;outline-color:var(--blue)}
+button,.select{border:1px solid var(--line);border-radius:9px;padding:10px 12px;background:#fff;color:var(--ink);cursor:pointer;font-weight:650}
+.primary{background:var(--navy);color:white;border-color:var(--navy)}
+.filters{display:flex;gap:9px;flex-wrap:wrap;margin:13px 0}.filters select,.filters input{border:1px solid var(--line);border-radius:8px;padding:9px;background:white}
+.suggestions{display:grid;gap:8px;margin-top:12px}.suggestion{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#fbfdff}
+.suggestion strong{color:var(--navy)}.pill{display:inline-block;border-radius:999px;padding:3px 8px;background:#edf2f7;color:#42556a;font-size:11px;font-weight:750}
+.status-approved{background:#e5f4ed;color:#176344}.status-review{background:#fff2df;color:#8c510c}.status-unresolved{background:#fde9e9;color:#982f2f}
+.result-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}
+.entry{background:white;border:1px solid var(--line);border-radius:12px;padding:15px}.entry h3{margin:0 0 5px;color:var(--navy);font-size:17px}.entry .meta{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.entry p{margin:6px 0;font-size:13px}.entry .target{background:#f1f7fb;padding:8px;border-radius:8px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.stat{padding:15px}.stat b{font-size:24px;color:var(--navy);display:block}.stat span{font-size:12px;color:var(--muted)}
+.section{margin-top:24px}.rule-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.rule-card{padding:15px}.rule-card h3{margin:0 0 7px;font-size:15px;color:var(--navy)}.rule-card p{margin:5px 0;font-size:13px}.tag{font-size:11px;font-weight:750;text-transform:uppercase;letter-spacing:.04em;color:var(--blue)}
+.notice{background:#fff8e9;border-left:4px solid #d89b31;padding:12px 14px;border-radius:8px;font-size:13px;margin-top:14px}
+footer{margin-top:40px;padding:24px;text-align:center;color:var(--muted);font-size:12px}
+.empty{padding:18px;text-align:center;color:var(--muted);background:#fff;border:1px dashed #bdc9d5;border-radius:12px}
+@media(max-width:760px){.hero-grid,.result-grid,.rule-grid{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.searchbox{flex-direction:column}}
+</style></head>
+<body>
+<header><h1>Product Naming Standard</h1><p>One place to look up approved terminology, understand naming rules and find similar dictionary terms while you type.</p>
+<nav><a href="#finder">Dictionary finder</a><a href="#rules">Naming rules</a><a href="public/Product_Naming_Standardisation_Manual.pdf" target="_blank">Open PDF manual ↗</a><a href="public/dictionary.json" target="_blank">Dictionary data ↗</a></nav></header>
+<main>
+<section class="hero-grid" id="finder">
+<div class="panel">
+<h2>Find a word or phrase</h2><p class="muted">Start typing. Suggestions use spelling similarity and a phonetic Soundex match. Select a suggestion to inspect its approved term, category, status and scope.</p>
+<div class="searchbox"><input id="query" type="search" placeholder="e.g. HrvrdChrry, American Waln..." autocomplete="off"><button id="clear">Clear</button></div>
+<div class="filters"><select id="category"><option value="">All categories</option></select><select id="status"><option value="">All decisions</option><option>APPROVED MAPPING</option><option>APPROVED TERM – preserve spelling</option><option>APPROVED</option><option>UNRESOLVED – needs target</option><option>PENDING</option><option>REVIEW</option></select><select id="scope"><option value="">All item groups</option><option>Edgings</option><option>RM</option><option>FG_MTO</option><option>FG_MTS</option><option>Hardware</option><option>Offcut</option><option>Glass</option></select></div>
+<div id="suggestions" class="suggestions" aria-live="polite"></div>
+<div class="notice">Suggestions are not automatic corrections. Always confirm the decision status and applicable item group before using a proposed term.</div>
+</div>
+<div class="panel">
+<h2>Dictionary at a glance</h2><p class="muted">Loaded from the reviewed dictionary and latest naming workbook.</p>
+<div class="stats"><div class="stat"><b id="countAll">—</b><span>Dictionary entries</span></div><div class="stat"><b id="countMap">—</b><span>Approved mappings</span></div><div class="stat"><b id="countReview">—</b><span>Unresolved / review</span></div></div>
+<p class="muted" id="loadStatus" style="margin-top:14px">Loading dictionary…</p>
+</div></section>
+<section class="section panel"><h2>Dictionary entries</h2><p class="muted">Browse by category, decision status or item group. Search also filters the full dictionary.</p><div id="results" class="result-grid"></div><div id="empty" class="empty" hidden>No matching entries. Try a shorter search or remove a filter.</div><div style="display:flex;justify-content:center;margin-top:15px"><button id="more" hidden>Show more</button></div></section>
+<section class="section" id="rules"><h2 style="color:var(--navy)">Naming rules at a glance</h2><div class="rule-grid" id="ruleCards"></div></section>
+</main><footer>Internal working reference • Use the current approved dictionary and escalate unresolved terms for review.</footer>
+<script>
+let dictionary=[], visible=40, selectedId=null;
+const $=id=>document.getElementById(id);
+function norm(s){return String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g," ").trim()}
+function soundex(s){
+ const t=norm(s).replace(/\s/g,""); if(!t)return "";
+ const map={b:1,f:1,p:1,v:1,c:2,g:2,j:2,k:2,q:2,s:2,x:2,z:2,d:3,t:3,l:4,m:5,n:5,r:6};
+ let out=t[0].toUpperCase(),prev=map[t[0]]||0;
+ for(let i=1;i<t.length&&out.length<4;i++){let n=map[t[i]]||0;if(n&&n!==prev)out+=n;prev=n}
+ return (out+"000").slice(0,4)
+}
+function editDistance(a,b){
+ a=norm(a);b=norm(b);if(a===b)return 0;if(!a)return b.length;if(!b)return a.length;
+ let prev=Array.from({length:b.length+1},(_,i)=>i);
+ for(let i=1;i<=a.length;i++){let cur=[i];for(let j=1;j<=b.length;j++){cur[j]=Math.min(cur[j-1]+1,prev[j]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1));if(i>1&&j>1&&a[i-1]===b[j-2]&&a[i-2]===b[j-1])cur[j]=Math.min(cur[j],prev[j-2]+1)}prev=cur}
+ return prev[b.length]
+}
+function similarity(q,e){
+ const query=norm(q), term=norm(e.term), target=norm(e.approvedTerm);
+ if(!query)return 0;
+ let best=0;
+ for(const s of [term,target].filter(Boolean)){
+  const dist=editDistance(query,s), max=Math.max(query.length,s.length);
+  best=Math.max(best,1-dist/Math.max(1,max));
+  if(s.includes(query)||query.includes(s))best=Math.max(best,.86);
+  if(soundex(query)===soundex(s))best=Math.max(best,.78);
+  const qTokens=query.split(" "), sTokens=s.split(" ");
+  if(qTokens.some(qt=>sTokens.some(st=>st.startsWith(qt)||qt.startsWith(st))))best=Math.max(best,.68);
+ }
+ return best;
+}
+function statusClass(s){s=String(s||"").toUpperCase();if(s.includes("UNRESOLVED")||s.includes("REJECT"))return "status-unresolved";if(s.includes("PENDING")||s.includes("REVIEW"))return "status-review";return "status-approved"}
+function fillCategories(){let cats=[...new Set(dictionary.map(x=>x.category).filter(Boolean))].sort();cats.forEach(c=>{let o=document.createElement("option");o.value=c;o.textContent=c;$("category").append(o)})}
+function matchesFilters(e){
+ const q=$("query").value.trim(),cat=$("category").value,status=$("status").value,scope=$("scope").value;
+ return (!cat||e.category===cat)&&(!status||e.status===status)&&(!scope||String(e.groups||"").toLowerCase().includes(scope.toLowerCase()))&&(!q||norm(e.term+" "+e.approvedTerm+" "+e.examples).includes(norm(q))||similarity(q,e)>.55)
+}
+function entryCard(e){
+ const d=document.createElement("article");d.className="entry";
+ const target=e.approvedTerm&&e.approvedTerm!==e.term?`<div class="target"><b>Approved term:</b> ${esc(e.approvedTerm)}</div>`:"";
+ d.innerHTML=`<h3>${esc(e.term)}</h3><div class="meta"><span class="pill">${esc(e.category)}</span><span class="pill ${statusClass(e.status)}">${esc(e.status)}</span></div>${target}<p><b>Scope:</b> ${esc(e.groups||"Not specified")}</p><p><b>Occurrences:</b> ${Number(e.occurrences||0).toLocaleString()}</p>${e.comments?`<p class="muted">${esc(e.comments)}</p>`:""}`;
+ return d
+}
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function renderSuggestions(){
+ const q=$("query").value.trim(), box=$("suggestions");box.innerHTML="";
+ if(q.length<2)return;
+ const ranked=dictionary.map(e=>({e,score:similarity(q,e)})).filter(x=>x.score>.48).sort((a,b)=>b.score-a.score).slice(0,7);
+ if(!ranked.length){box.innerHTML='<div class="empty">No close matches found.</div>';return}
+ ranked.forEach(({e,score})=>{let b=document.createElement("button");b.className="suggestion";b.innerHTML=`<span><strong>${esc(e.term)}</strong>${e.approvedTerm&&e.approvedTerm!==e.term?` → ${esc(e.approvedTerm)}`:""}<br><small>${esc(e.category)} · ${esc(e.status)}</small></span><span class="pill">${Math.round(score*100)}% match</span>`;b.addEventListener("click",()=>{$("query").value=e.term; $("category").value="";$("status").value="";$("scope").value="";renderAll();$("results").scrollIntoView({behavior:"smooth",block:"start"})});box.append(b)})
+}
+function renderResults(){
+ const all=dictionary.filter(matchesFilters), box=$("results");box.innerHTML="";
+ all.slice(0,visible).forEach(e=>box.append(entryCard(e)));
+ $("empty").hidden=all.length>0;$("more").hidden=all.length<=visible;
+ $("more").textContent=`Show more (${all.length-visible} remaining)`;
+}
+function renderAll(){renderSuggestions();renderResults()}
+async function init(){
+ try{
+  const res=await fetch("public/dictionary.json");if(!res.ok)throw new Error("Could not load dictionary.json");
+  dictionary=await res.json();fillCategories();
+  $("countAll").textContent=dictionary.length.toLocaleString();
+  $("countMap").textContent=dictionary.filter(x=>String(x.status).includes("APPROVED MAPPING")||String(x.status)==="APPROVED").length.toLocaleString();
+  $("countReview").textContent=dictionary.filter(x=>/UNRESOLVED|PENDING|REVIEW/i.test(x.status)).length.toLocaleString();
+  $("loadStatus").textContent="Dictionary loaded successfully.";
+  renderAll();
+ }catch(err){$("loadStatus").textContent=err.message+" — ensure public/dictionary.json is deployed with the site."}
+}
+$("query").addEventListener("input",()=>{visible=40;renderAll()});
+["category","status","scope"].forEach(id=>$(id).addEventListener("change",()=>{visible=40;renderAll()}));
+$("clear").addEventListener("click",()=>{$("query").value="";$("category").value="";$("status").value="";$("scope").value="";visible=40;renderAll()});
+$("more").addEventListener("click",()=>{visible+=40;renderResults()});
+const ruleData=[
+ ["R025 · Capitalisation","Capitalise the first letter of each word except specified short words such as “for” and “with”. Preserve acronyms and protected terms."],
+ ["R026 · Slash formatting","Remove spaces immediately before and after slash separators: ColourA / ColourB → ColourA/ColourB."],
+ ["Dimensions","Use lowercase x between numeric dimensions and lowercase mm. Example: 1350X600mm → 1350x600mm."],
+ ["Compound colours","Join approved compound colours in RM and FG_MTS. Cover Cap is an explicit exception; do not apply globally."],
+ ["NL code","Join NL and its numeric value where applicable: NL 500 → NL500."],
+ ["60-character limit","Final D365 name must be 60 characters or fewer. Never truncate meaningful information; flag for review."],
+ ["Protected terms","Preserve BlumAntarro, BlumAlegra, BlumMovento, BlumTandem, DTCDMotion, DrawLine, L Shape and DrwBox."],
+ ["Manual approval","New terminology and mappings require human approval. Similarity suggestions are not automatic corrections."]
+];
+ruleData.forEach(([title,desc])=>{let d=document.createElement("article");d.className="rule-card";d.innerHTML=`<div class="tag">Naming guidance</div><h3>${title}</h3><p>${desc}</p>`;$("ruleCards").append(d)});
+init();
+</script></body></html>
